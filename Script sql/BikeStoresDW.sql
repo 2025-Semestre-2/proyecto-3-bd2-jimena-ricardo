@@ -39,11 +39,11 @@ CREATE TABLE DimProduct (
     ProductName VARCHAR(255),
     BrandName VARCHAR(255),
     CategoryName VARCHAR(255),
-    ModelYear INT,
+    ModelYear SMALLINT,
     ListPrice DECIMAL(10,2),
-    StartDate DATE,                   
-    EndDate DATE,                     
-    IsCurrent BIT                      -- Para identificar la versión actual
+    StartDate DATETIME,                   
+    EndDate DATETIME,                     
+    --IsCurrent BIT                      -- Para identificar la versión actual
 );
 
 
@@ -61,12 +61,12 @@ CREATE TABLE DimEmployee (
     FullName VARCHAR(255),             -- Nombre + Apellidos
     Email VARCHAR(255),
     Phone VARCHAR(255),
-    Active INT,
+    Active TINYINT,
     StoreID INT,
     ManagerID INT,
-    StartDate DATE,                    -- Para SCD2
-    EndDate DATE,                      -- Para SCD2
-    IsCurrent BIT                      -- Para versión actual
+    StartDate DATETIME,                    -- Para SCD2
+    EndDate DATETIME,                      -- Para SCD2
+    --IsCurrent BIT                      -- Para versión actual
 );
 
 
@@ -122,7 +122,7 @@ CREATE TABLE DimOrder (
     CustomerID INT,
     StoreID INT,
     StaffID INT,
-    Status INT
+    Status TINYINT
 );
 
 

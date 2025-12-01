@@ -11,8 +11,8 @@
   DTS:LocaleID="5130"
   DTS:ObjectName="extract_brands"
   DTS:PackageType="5"
-  DTS:VersionBuild="9"
-  DTS:VersionGUID="{C80B6845-F594-4F4D-A5AD-F54213192BD9}">
+  DTS:VersionBuild="10"
+  DTS:VersionGUID="{660B5D0B-3AE4-46F2-B7DE-A247988EF098}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -443,27 +443,27 @@
       <GraphLayout
         Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="110.4,41.6"
-          Id="Package\copy_data\extract"
-          TopLeft="57.1428581159943,48.1764712638921" />
-        <NodeLayout
           Size="100.8,41.6"
           Id="Package\copy_data\send"
           TopLeft="60.000001021794,141.470590219366" />
+        <NodeLayout
+          Size="110.4,41.6"
+          Id="Package\copy_data\extract"
+          TopLeft="57.1428581159943,48.1764712638921" />
         <EdgeLayout
           Id="Package\copy_data.Paths[OLE DB Source Output]"
           TopLeft="111.371429568894,89.7764712638921">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,51.6941189554736"
+              EndConnector="0,51.6941189554739"
               Start="0,0"
-              End="0,44.1941189554736">
+              End="0,44.1941189554739">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,44.1941189554736" />
+                    End="0,44.1941189554739" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
