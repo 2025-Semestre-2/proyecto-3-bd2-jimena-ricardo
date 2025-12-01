@@ -2,58 +2,58 @@
 <BuildLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ProjectInfo>
     <Name>etl</Name>
-    <LastWriteTime>2025-11-30T06:08:11.2769272Z</LastWriteTime>
+    <LastWriteTime>2025-11-30T20:11:23.6041942Z</LastWriteTime>
     <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
   </ProjectInfo>
   <LastBuildInfos>
     <ProjectBuildItemInfo>
       <Name>extract_products.dtsx</Name>
-      <LastWriteTime>2025-11-29T09:25:46.2122336Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.6199909Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_categories.dtsx</Name>
-      <LastWriteTime>2025-11-30T03:52:45.8489037Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.6122849Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_brands.dtsx</Name>
-      <LastWriteTime>2025-11-30T04:26:06.7270768Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.6101969Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_customers.dtsx</Name>
-      <LastWriteTime>2025-11-30T04:24:24.7085481Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.61598Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_stores.dtsx</Name>
-      <LastWriteTime>2025-11-30T04:22:07.4311862Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.6239774Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_staffs.dtsx</Name>
-      <LastWriteTime>2025-11-30T05:20:17.7660603Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.620982Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_orders.dtsx</Name>
-      <LastWriteTime>2025-11-30T04:55:35.70809Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.6179774Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_order_items.dtsx</Name>
-      <LastWriteTime>2025-11-30T04:51:42.9221572Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.6169834Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_stocks.dtsx</Name>
-      <LastWriteTime>2025-11-30T04:29:02.6929777Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.6219801Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>orchestrator.dtsx</Name>
-      <LastWriteTime>2025-11-30T06:08:11.2583617Z</LastWriteTime>
+      <LastWriteTime>2025-11-30T20:11:23.6519151Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
   </LastBuildInfos>

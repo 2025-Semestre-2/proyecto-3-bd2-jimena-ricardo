@@ -7,6 +7,6 @@
     <DTS:ConnectionManager
       DTS:ConnectRetryCount="1"
       DTS:ConnectRetryInterval="5"
-      DTS:ConnectionString="Data Source=.;Initial Catalog=Bikestores;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-etl-{E91CB62A-0B9E-48A0-9CF3-6F20A6FFFDF2}LocalHost.Bikestores;Auto Translate=False;" />
+      DTS:ConnectionString="Data Source=.;Initial Catalog=BikeStores;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-etl-{E91CB62A-0B9E-48A0-9CF3-6F20A6FFFDF2}LocalHost.Bikestores;" />
   </DTS:ObjectData>
 </DTS:ConnectionManager>

@@ -26,7 +26,7 @@
           <SSIS:Property SSIS:Name="CreatorComputerName">GREIVINARCE</SSIS:Property>
           <SSIS:Property SSIS:Name="Description">
           </SSIS:Property>
-          <SSIS:Property SSIS:Name="PasswordVerifier" SSIS:Sensitive="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAStCFxMJNpU2mzDAObSru0QAAAAACAAAAAAAQZgAAAAEAACAAAADxPQiofozX7uLXEAZ3Qh2adrbnz+/547Z8/G8811oQCAAAAAAOgAAAAAIAACAAAABVoTH24/fdLCogRPqgbe9OJM1H2ihDryL04/J0dRpmwpAAAACdaf08zkfhzdXTU/DlCiRAoDM79CpQHr26HxpHEu72ahSrsuSqIMh1Eh1ojx+8cma4mb2EZleYWp40jv+hm466B4ToUpaTHN+NVkK3R1oTbtp1Am9bY6HqdC8kR646PczYARemuTm3HTKm7J4QdGYMLl8cmN8RKDQaanLKXnZynaYZT8HJuuvm7DMFsduXLENAAAAAE1rqOLnJo6y5M/95oS1jWPOlveJyxY0UZxOctJfp3Rfmd2AlC3+k6bBN9VaYahOJl9f08S0TWtLyUypScHW0jw==</SSIS:Property>
+          <SSIS:Property SSIS:Name="PasswordVerifier" SSIS:Sensitive="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAl+nzp7JaT0qITqrCCknmdAAAAAACAAAAAAAQZgAAAAEAACAAAABvjC8NaEa1Vzvr93QSa6ZdMn0uU9mbNqxULIxT4YA9yQAAAAAOgAAAAAIAACAAAAAhYn942Oh09lwayOefRfhp74aEwUvzHBhhQN0FwchpGpAAAADbKClXRdEK4MfkIs/KR/Wdq0SU8MHW/WpgJvW47+mH/RakOALtY6vBLl/MyEngwS774RkdjFGE9wLhv8EvLXPEsTGe12fo7wiSUycZ1GJi0RTlbNYwSiUes7o3tNJz987DEIabjZAAGMW8Z07fhiSkC1fBwbnRl8A4EHe70vavf2Jg7aVopatmQqrTYrIT4MpAAAAATrW2ITYMvqS6x1yAjn3TfCmKRBN+ygy0oJLtIi9qTumoeQje/yaH83inuJMGmId8/x8eAXQACzDEd4L+YBu4+A==</SSIS:Property>
           <SSIS:Property SSIS:Name="FormatVersion">1</SSIS:Property>
         </SSIS:Properties>
         <SSIS:Packages>
@@ -72,7 +72,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">Data Source=.;Initial Catalog=Bikestores;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-etl-{E91CB62A-0B9E-48A0-9CF3-6F20A6FFFDF2}LocalHost.Bikestores;Auto Translate=False;</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">Data Source=.;Initial Catalog=BikeStores;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-etl-{E91CB62A-0B9E-48A0-9CF3-6F20A6FFFDF2}LocalHost.Bikestores;</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
@@ -132,7 +132,7 @@
                 <SSIS:Property SSIS:Name="IncludeInDebugDump">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Required">0</SSIS:Property>
                 <SSIS:Property SSIS:Name="Sensitive">0</SSIS:Property>
-                <SSIS:Property SSIS:Name="Value">Bikestores</SSIS:Property>
+                <SSIS:Property SSIS:Name="Value">BikeStores</SSIS:Property>
                 <SSIS:Property SSIS:Name="DataType">18</SSIS:Property>
               </SSIS:Properties>
             </SSIS:Parameter>
