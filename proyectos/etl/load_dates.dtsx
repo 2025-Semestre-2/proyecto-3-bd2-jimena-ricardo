@@ -1,0 +1,303 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="11/30/2025 11:30:17 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="GREIVINARCE"
+  DTS:CreatorName="GREIVINARCE\GREIVIN"
+  DTS:DTSID="{2CBA7389-9636-4CDF-8DA2-FD5B3928B054}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5467.0"
+  DTS:LocaleID="5130"
+  DTS:ObjectName="load_dates"
+  DTS:PackageType="5"
+  DTS:VersionBuild="35"
+  DTS:VersionGUID="{3E3AD32A-E723-4C23-ACC8-8A57310DBEFA}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{6016CA44-708C-46DB-85FF-FEF09B23DF61}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="max_order_date">
+      <DTS:VariableValue
+        DTS:DataType="7">12/1/2025 2:29:39 PM</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{FE3BB466-4F1D-481C-8B69-DABFEAEF2D30}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="min_order_date">
+      <DTS:VariableValue
+        DTS:DataType="7">12/1/2025 2:26:50 PM</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Execute SQL Task"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:Disabled="True"
+      DTS:DTSID="{1357B478-47F2-4632-86B7-E505156B158A}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Execute SQL Task"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:PropertyExpression
+        DTS:Name="SqlStatementSource">"
+SET NOCOUNT ON
+
+GO
+
+
+DECLARE @d DATE = @[User::min_order_date];
+
+
+WHILE @d &lt;= @[User::max_order_date] 
+
+BEGIN
+
+INSERT INTO dbo.DimDate (
+
+    DateSK, FullDate, Year, Quarter, Month, MonthName, Day, DayOfWeek, DayName
+
+) VALUES (
+
+	CONVERT(char(8), @d, 112),
+
+    @d,
+
+    YEAR(@d),
+
+    DATEPART(QUARTER, @d),
+
+    MONTH(@d),
+
+    DATENAME(MONTH, @d),
+
+    DAY(@d),
+
+    DATEPART(WEEKDAY, @d),
+
+    DATENAME(WEEKDAY, @d)
+);
+
+SET @d = DATEADD(DAY, 1, @d);
+
+END
+
+GO
+
+
+SET NOCOUNT OFF
+
+GO
+"</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{B346E5B7-697F-47FB-A96D-E9899A7F004C}"
+          SQLTask:SqlStatementSource="&#xA;SET NOCOUNT ON&#xA;&#xA;GO&#xA;&#xA;&#xA;DECLARE @d DATE = @[User::min_order_date];&#xA;&#xA;&#xA;WHILE @d &lt;= @[User::max_order_date] &#xA;&#xA;BEGIN&#xA;&#xA;INSERT INTO dbo.DimDate (&#xA;&#xA;    DateSK, FullDate, Year, Quarter, Month, MonthName, Day, DayOfWeek, DayName&#xA;&#xA;) VALUES (&#xA;&#xA;&#x9;CONVERT(char(8), @d, 112),&#xA;&#xA;    @d,&#xA;&#xA;    YEAR(@d),&#xA;&#xA;    DATEPART(QUARTER, @d),&#xA;&#xA;    MONTH(@d),&#xA;&#xA;    DATENAME(MONTH, @d),&#xA;&#xA;    DAY(@d),&#xA;&#xA;    DATEPART(WEEKDAY, @d),&#xA;&#xA;    DATENAME(WEEKDAY, @d)&#xA;);&#xA;&#xA;SET @d = DATEADD(DAY, 1, @d);&#xA;&#xA;END&#xA;&#xA;GO&#xA;&#xA;&#xA;SET NOCOUNT OFF&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\max_date"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:Disabled="True"
+      DTS:DTSID="{2e96cb27-72f3-4059-8815-49fec78673c5}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="max_date"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{10B8DFAB-5DF1-43A3-BC65-7D5974E2C903}"
+          SQLTask:SqlStatementSource="SELECT MAX(d) AS m&#xA;FROM (&#xA;SELECT MAX(order_date) AS d FROM sales.orders&#xA;UNION ALL&#xA;SELECT MAX(required_date) AS d FROM sales.orders&#xA;UNION ALL&#xA;SELECT MAX(shipped_date) AS d FROM sales.orders&#xA;) AS max_dates"
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="mo"
+            SQLTask:DtsVariableName="User::max_order_date" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\min_date"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:Disabled="True"
+      DTS:DTSID="{28BC1404-2268-4757-B10B-AC73F603B542}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="min_date"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{10B8DFAB-5DF1-43A3-BC65-7D5974E2C903}"
+          SQLTask:SqlStatementSource="SELECT MIN(d) AS m&#xA;FROM (&#xA;SELECT MIN(order_date) AS d FROM sales.orders&#xA;UNION ALL&#xA;SELECT MIN(required_date) AS d FROM sales.orders&#xA;UNION ALL&#xA;SELECT MIN(shipped_date) AS d FROM sales.orders&#xA;) AS min_dates"
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="m"
+            SQLTask:DtsVariableName="User::min_order_date" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\populate_dimdates"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:Disabled="True"
+      DTS:DTSID="{85FB96A7-54A1-41C0-A556-674FDF303DB5}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="populate_dimdates"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="2">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{B346E5B7-697F-47FB-A96D-E9899A7F004C}"
+          SQLTask:SqlStatementSource="SET NOCOUNT ON&#xA;&#xA;GO&#xA;&#xA;DECLARE @d DATETIME = '01/01/2016'&#xA;--DECLARE @EndDate DATETIME = '28/12/2018'&#xA;&#xA;WHILE @d &lt;= @EndDate&#xA;&#xA;BEGIN&#xA;&#xA;INSERT INTO dbo.DimDate (&#xA;&#xA;    DateSK, FullDate, Year, Quarter, Month, MonthName, Day, DayOfWeek, DayName&#xA;&#xA;) VALUES (&#xA;&#xA;&#x9;CONVERT(char(8), @d, 112),&#xA;&#xA;    @d,&#xA;&#xA;    YEAR(@d),&#xA;&#xA;    DATEPART(QUARTER, @d),&#xA;&#xA;    MONTH(@d),&#xA;&#xA;    DATENAME(MONTH, @d),&#xA;&#xA;    DAY(@d),&#xA;&#xA;    DATEPART(WEEKDAY, @d),&#xA;&#xA;    DATENAME(WEEKDAY, @d)&#xA;);&#xA;&#xA;SET @d = DATEADD(DAY, 1, @d);&#xA;&#xA;END&#xA;&#xA;GO&#xA;&#xA;&#xA;SET NOCOUNT OFF&#xA;&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="1"
+            SQLTask:DtsVariableName="User::max_order_date"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="135"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="0"
+            SQLTask:DtsVariableName="User::min_order_date"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="135"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{88CB0F8E-4FE3-4B1B-BBBA-9963D0900352}"
+      DTS:From="Package\min_date"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Execute SQL Task" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{4B751B40-CD2C-4968-B9FF-534FCA2A6EE5}"
+      DTS:From="Package\max_date"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Execute SQL Task" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="162.4,41.6"
+          Id="Package\Execute SQL Task"
+          TopLeft="108.571430420389,159.058825760152" />
+        <NodeLayout
+          Size="124.8,41.6"
+          Id="Package\max_date"
+          TopLeft="223.571432378827,42.8235300123485" />
+        <NodeLayout
+          Size="122.4,41.6"
+          Id="Package\min_date"
+          TopLeft="47.8571436721451,41.2941182261932" />
+        <NodeLayout
+          Size="168,41.6"
+          Id="Package\populate_dimdates"
+          TopLeft="388.57143518876,156.764708080919" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="109.057143672145,82.8941182261932">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="80.7142867482441,76.1647075339586"
+              Start="0,0"
+              End="80.7142867482441,68.6647075339586">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,34.0823537669793" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,34.0823537669793"
+                    Point2="0,38.0823537669793"
+                    Point3="4,38.0823537669793" />
+                  <mssgle:LineSegment
+                    End="76.7142867482441,38.0823537669793" />
+                  <mssgle:CubicBezierSegment
+                    Point1="76.7142867482441,38.0823537669793"
+                    Point2="80.7142867482441,38.0823537669793"
+                    Point3="80.7142867482441,42.0823537669793" />
+                  <mssgle:LineSegment
+                    End="80.7142867482441,68.6647075339586" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="285.971432378827,84.4235300123485">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-70.4666686251045,74.6352957478033"
+              Start="0,0"
+              End="-70.4666686251045,67.1352957478033">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,40.3442879125973" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,40.3442879125973"
+                    Point2="0,44.3442879125973"
+                    Point3="-4,44.3442879125973" />
+                  <mssgle:LineSegment
+                    End="-66.4666686251045,44.3442879125973" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-66.4666686251045,44.3442879125973"
+                    Point2="-70.4666686251045,44.3442879125973"
+                    Point3="-70.4666686251045,48.3442879125973" />
+                  <mssgle:LineSegment
+                    End="-70.4666686251045,67.1352957478033" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
