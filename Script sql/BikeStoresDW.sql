@@ -11,11 +11,11 @@ VALUES
 (20240103, '2024-01-03', 2024, 1, 1, 'January', 3, 3, 'Wednesday'),
 (20240201, '2024-02-01', 2024, 1, 2, 'February', 1, 4, 'Thursday');
 
-INSERT INTO DimProduct (ProductID, ProductName, BrandName, CategoryName, ModelYear, ListPrice, StartDate, EndDate, IsCurrent)
+INSERT INTO DimProduct (ProductID, ProductName, BrandName, CategoryName, ModelYear, ListPrice, StartDate, EndDate)
 VALUES
-(1, 'Mountain Bike X1', 'Trek', 'Mountain Bikes', 2022, 900.00, '2024-01-01', '9999-12-31', 1),
-(2, 'Road Bike R9', 'Giant', 'Road Bikes', 2023, 1200.00, '2024-01-01', '9999-12-31', 1),
-(3, 'City Bike C3', 'Cannondale', 'City Bikes', 2021, 700.00, '2024-01-01', '9999-12-31', 1);
+(1, 'Mountain Bike X1', 'Trek', 'Mountain Bikes', 2022, 900.00, '2024-01-01', '9999-12-31'),
+(2, 'Road Bike R9', 'Giant', 'Road Bikes', 2023, 1200.00, '2024-01-01', '9999-12-31'),
+(3, 'City Bike C3', 'Cannondale', 'City Bikes', 2021, 700.00, '2024-01-01', '9999-12-31');
 
 
 INSERT INTO DimCustomer (CustomerID, FullName, Email, Phone, Street, City, State, ZipCode)
@@ -24,10 +24,10 @@ VALUES
 (102, 'María Ruiz', 'maria@example.com', '555-5678', 'Calle Dos', 'Barcelona', 'BC', '08001'),
 (103, 'Luis Torres', 'luis@example.com', '555-9999', 'Calle Tres', 'Valencia', 'VC', '46001');
 
-INSERT INTO DimEmployee (EmployeeID, FullName, Email, Phone, Active, StoreID, ManagerID, StartDate, EndDate, IsCurrent)
+INSERT INTO DimEmployee (EmployeeID, FullName, Email, Phone, Active, StoreID, ManagerID, StartDate, EndDate)
 VALUES
-(201, 'Carlos Mendoza', 'carlos@bike.com', '555-1111', 1, 1, NULL, '2024-01-01', '9999-12-31', 1),
-(202, 'Ana López', 'ana@bike.com', '555-2222', 1, 2, 201, '2024-01-01', '9999-12-31', 1);
+(201, 'Carlos Mendoza', 'carlos@bike.com', '555-1111', 1, 1, NULL, '2024-01-01', '9999-12-31'),
+(202, 'Ana López', 'ana@bike.com', '555-2222', 1, 2, 201, '2024-01-01', '9999-12-31');
 
 INSERT INTO DimStore (StoreID, StoreName, City, State, ZipCode, Street)
 VALUES
@@ -65,6 +65,7 @@ SELECT * FROM DimStore;
         -> Fecha Requerida
         -> Fecha Envío
 ===============================================================*/
+use BikeStoresDW
 
 CREATE TABLE DimDate (
     DateSK INT PRIMARY KEY,            -- Clave sustituta AAAAMMDD, Surrogate Key
@@ -97,7 +98,6 @@ CREATE TABLE DimProduct (
     ListPrice DECIMAL(10,2),
     StartDate DATETIME,                   
     EndDate DATETIME,                     
-    --IsCurrent BIT                      -- Para identificar la versión actual
 );
 
 
@@ -120,7 +120,6 @@ CREATE TABLE DimEmployee (
     ManagerID INT,
     StartDate DATETIME,                    -- Para SCD2
     EndDate DATETIME,                      -- Para SCD2
-    --IsCurrent BIT                      -- Para versión actual
 );
 
 
@@ -210,3 +209,4 @@ CREATE TABLE FactSales (
     LineTotal DECIMAL(18,2),           -- Total de la línea
     InvoiceCount INT                   -- Conteo de facturas (1 por orden)
 );
+
