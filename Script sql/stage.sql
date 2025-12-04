@@ -92,3 +92,24 @@ CREATE TABLE production.stocks (
 	quantity INT,
 	PRIMARY KEY (store_id, product_id)
 );
+
+use bikestoresst	
+select
+	o.order_id,
+	p.product_id,
+	o.customer_id,
+	o.staff_id,
+	o.store_id,
+	o.order_date,
+	o.required_date,
+	o.shipped_date,
+	oi.quantity,
+	oi.list_price,
+	oi.discount,
+	oi.list_price * oi.quantity as lineTotal,
+	(1) as InvoiceCount
+from sales.orders as o
+join sales.order_items as oi
+on oi.order_id = o.order_id
+join production.products as p
+on p.product_id = oi.product_id
