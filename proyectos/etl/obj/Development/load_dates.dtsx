@@ -11,8 +11,8 @@
   DTS:LocaleID="5130"
   DTS:ObjectName="load_dates"
   DTS:PackageType="5"
-  DTS:VersionBuild="41"
-  DTS:VersionGUID="{3084FF4F-87A1-4FF5-911B-085921103399}">
+  DTS:VersionBuild="42"
+  DTS:VersionGUID="{C1D401C7-9334-4455-99DE-339007849061}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:Variables>
@@ -48,7 +48,7 @@
       DTS:ThreadHint="0">
       <DTS:Variables />
       <DTS:PropertyExpression
-        DTS:Name="SqlStatementSource">"DECLARE @d DATE = ?;
+        DTS:Name="SqlStatementSource">"DELETE FROM dbo.DimDate;DECLARE @d DATE = ?;
 DECLARE @maxd DATE = ?;
 
 WHILE @d &lt;= @maxd
@@ -74,7 +74,7 @@ END;
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{B346E5B7-697F-47FB-A96D-E9899A7F004C}"
-          SQLTask:SqlStatementSource="DECLARE @d DATE = ?;&#xA;DECLARE @maxd DATE = ?;&#xA;&#xA;WHILE @d &lt;= @maxd&#xA;BEGIN&#xA;    INSERT INTO dbo.DimDate (&#xA;        DateSK, FullDate, Year, Quarter, Month, MonthName, Day, DayOfWeek, DayName&#xA;    ) &#xA;    VALUES (&#xA;        CONVERT(char(8), @d, 112),&#xA;        @d,&#xA;        YEAR(@d),&#xA;        DATEPART(QUARTER, @d),&#xA;        MONTH(@d),&#xA;        DATENAME(MONTH, @d),&#xA;        DAY(@d),&#xA;        DATEPART(WEEKDAY, @d),&#xA;        DATENAME(WEEKDAY, @d)&#xA;    );&#xA;&#xA;    SET @d = DATEADD(DAY, 1, @d);&#xA;END;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          SQLTask:SqlStatementSource="DELETE FROM dbo.DimDate;DECLARE @d DATE = ?;&#xA;DECLARE @maxd DATE = ?;&#xA;&#xA;WHILE @d &lt;= @maxd&#xA;BEGIN&#xA;    INSERT INTO dbo.DimDate (&#xA;        DateSK, FullDate, Year, Quarter, Month, MonthName, Day, DayOfWeek, DayName&#xA;    ) &#xA;    VALUES (&#xA;        CONVERT(char(8), @d, 112),&#xA;        @d,&#xA;        YEAR(@d),&#xA;        DATEPART(QUARTER, @d),&#xA;        MONTH(@d),&#xA;        DATENAME(MONTH, @d),&#xA;        DAY(@d),&#xA;        DATEPART(WEEKDAY, @d),&#xA;        DATENAME(WEEKDAY, @d)&#xA;    );&#xA;&#xA;    SET @d = DATEADD(DAY, 1, @d);&#xA;END;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ParameterBinding
             SQLTask:ParameterName="1"
             SQLTask:DtsVariableName="User::max_order_date"
@@ -99,7 +99,7 @@ END;
       DTS:LocaleID="-1"
       DTS:ObjectName="max_date"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="2">
+      DTS:ThreadHint="0">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -121,7 +121,7 @@ END;
       DTS:LocaleID="-1"
       DTS:ObjectName="min_date"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="0">
+      DTS:ThreadHint="1">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -144,7 +144,7 @@ END;
       DTS:LocaleID="-1"
       DTS:ObjectName="populate_dimdates"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="1">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -185,31 +185,31 @@ END;
       DTS:To="Package\Execute SQL Task" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
-<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
-<!--If you manually edit this section and make a mistake, you can delete it. -->
-<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<!--Esta sección CDATA contiene la información de diseño del paquete. Esta sección incluye información como, por ejemplo, las coordenadas (x,y), el ancho y el alto.-->
+<!--Si edita manualmente esta sección y comete un error, puede eliminarlo. -->
+<!--El paquete podrá cargarse normalmente, pero se perderá la información de diseño anterior y el diseñador reorganizará los elementos automáticamente en la superficie de diseño.-->
 <Objects
   Version="8">
-  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <!--Cada uno de los nodos siguientes contiene propiedades que no afectan al comportamiento en tiempo de ejecución.-->
   <Package
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="162.4,41.6"
+          Size="162,42"
           Id="Package\Execute SQL Task"
           TopLeft="108.571430420389,159.058825760152" />
         <NodeLayout
-          Size="124,41.6"
+          Size="124,42"
           Id="Package\max_date"
           TopLeft="223.571432378827,42.8235300123485" />
         <NodeLayout
-          Size="122.4,41.6"
+          Size="122,42"
           Id="Package\min_date"
           TopLeft="47.8571436721451,41.2941182261932" />
         <NodeLayout
-          Size="168,41.6"
+          Size="168,42"
           Id="Package\populate_dimdates"
           TopLeft="388.57143518876,156.764708080919" />
         <EdgeLayout
