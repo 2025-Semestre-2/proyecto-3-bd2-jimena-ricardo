@@ -1,60 +1,6 @@
----CREATE DATABASE BikeStoresDW;
+--CREATE DATABASE BikeStoresDW;
 
 USE BikeStoresDW;
-
-select * from DimCustomer;
-
-INSERT INTO DimDate (DateSK, FullDate, Year, Quarter, Month, MonthName, Day, DayOfWeek, DayName)
-VALUES
-(20240101, '2024-01-01', 2024, 1, 1, 'January', 1, 1, 'Monday'),
-(20240102, '2024-01-02', 2024, 1, 1, 'January', 2, 2, 'Tuesday'),
-(20240103, '2024-01-03', 2024, 1, 1, 'January', 3, 3, 'Wednesday'),
-(20240201, '2024-02-01', 2024, 1, 2, 'February', 1, 4, 'Thursday');
-
-INSERT INTO DimProduct (ProductID, ProductName, BrandName, CategoryName, ModelYear, ListPrice, StartDate, EndDate)
-VALUES
-(1, 'Mountain Bike X1', 'Trek', 'Mountain Bikes', 2022, 900.00, '2024-01-01', '9999-12-31'),
-(2, 'Road Bike R9', 'Giant', 'Road Bikes', 2023, 1200.00, '2024-01-01', '9999-12-31'),
-(3, 'City Bike C3', 'Cannondale', 'City Bikes', 2021, 700.00, '2024-01-01', '9999-12-31');
-
-
-INSERT INTO DimCustomer (CustomerID, FullName, Email, Phone, Street, City, State, ZipCode)
-VALUES
-(101, 'Pedro Gómez', 'pedro@example.com', '555-1234', 'Calle Uno', 'Madrid', 'MD', '28001'),
-(102, 'María Ruiz', 'maria@example.com', '555-5678', 'Calle Dos', 'Barcelona', 'BC', '08001'),
-(103, 'Luis Torres', 'luis@example.com', '555-9999', 'Calle Tres', 'Valencia', 'VC', '46001');
-
-INSERT INTO DimEmployee (EmployeeID, FullName, Email, Phone, Active, StoreID, ManagerID, StartDate, EndDate)
-VALUES
-(201, 'Carlos Mendoza', 'carlos@bike.com', '555-1111', 1, 1, NULL, '2024-01-01', '9999-12-31'),
-(202, 'Ana López', 'ana@bike.com', '555-2222', 1, 2, 201, '2024-01-01', '9999-12-31');
-
-INSERT INTO DimStore (StoreID, StoreName, City, State, ZipCode, Street)
-VALUES
-(1, 'BikeStore Central', 'Madrid', 'MD', '28001', 'Av. Central 100'),
-(2, 'BikeStore Norte', 'Barcelona', 'BC', '08002', 'Av. Norte 20');
-
-INSERT INTO DimOrder (OrderID, CustomerID, StoreID, StaffID, Status)
-VALUES
-(5001, 101, 1, 201, 1),
-(5002, 102, 2, 202, 1),
-(5003, 103, 1, 201, 1);
-
-INSERT INTO FactSales
-(ProductSK, CustomerSK, EmployeeSK, StoreSK, DateOrderSK, DateRequiredSK, DateShippedSK,
- Quantity, UnitPrice, Discount, LineTotal, InvoiceCount, OrderID)
-VALUES
-(1, 1, 1, 1, 20240101, 20240102, 20240103, 2, 900.00, 0.00, 1800.00, 1, 5001),
-
-(2, 2, 2, 2, 20240102, 20240103, 20240103, 1, 1200.00, 50.00, 1150.00, 1, 5002),
-
-(3, 3, 1, 1, 20240201, 20240201, 20240201, 3, 700.00, 0.00, 2100.00, 1, 5003);
-
-
-SELECT * FROM DimProduct;
-SELECT * FROM DimCustomer;
-SELECT * FROM DimEmployee;
-SELECT * FROM DimStore;
 
 /*==============================================================
     DIMDATE (SCD1)
@@ -68,7 +14,7 @@ SELECT * FROM DimStore;
 use BikeStoresDW
 
 CREATE TABLE DimDate (
-    DateSK INT PRIMARY KEY,            -- Clave sustituta AAAAMMDD, Surrogate Key
+    DateKey INT PRIMARY KEY,          
     FullDate DATE NOT NULL,
     Year INT NOT NULL,
     Quarter INT NOT NULL,
@@ -89,7 +35,7 @@ CREATE TABLE DimDate (
 ===============================================================*/
 
 CREATE TABLE DimProduct (
-    ProductSK INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
+    ProductKey INT IDENTITY(1,1) PRIMARY KEY,
     ProductID INT,                     -- Business Key
     ProductName VARCHAR(255),
     BrandName VARCHAR(255),
@@ -97,7 +43,7 @@ CREATE TABLE DimProduct (
     ModelYear SMALLINT,
     ListPrice DECIMAL(10,2),
     StartDate DATETIME,                   
-    EndDate DATETIME,                     
+    EndDate DATETIME                    
 );
 
 
@@ -110,7 +56,7 @@ CREATE TABLE DimProduct (
 ===============================================================*/
 
 CREATE TABLE DimEmployee (
-    EmployeeSK INT IDENTITY(1,1) PRIMARY KEY, --- Surrogate Key
+    EmployeeKey INT IDENTITY(1,1) PRIMARY KEY, --- Surrogate Key
     EmployeeID INT,                    -- Business Key
     FullName VARCHAR(255),             -- Nombre + Apellidos
     Email VARCHAR(255),
@@ -119,7 +65,7 @@ CREATE TABLE DimEmployee (
     StoreID INT,
     ManagerID INT,
     StartDate DATETIME,                    -- Para SCD2
-    EndDate DATETIME,                      -- Para SCD2
+    EndDate DATETIME                     -- Para SCD2
 );
 
 
@@ -130,7 +76,7 @@ CREATE TABLE DimEmployee (
 ===============================================================*/
 
 CREATE TABLE DimCustomer (
-    CustomerSK INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
+    CustomerKey INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
     CustomerID INT,
     FullName VARCHAR(255),             -- Nombre + apellidos
     Email VARCHAR(255),
@@ -152,7 +98,7 @@ CREATE TABLE DimCustomer (
 ===============================================================*/
 
 CREATE TABLE DimStore (
-    StoreSK INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
+    StoreKey INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
     StoreID INT,
     StoreName VARCHAR(255),
     City VARCHAR(255),
@@ -170,7 +116,7 @@ CREATE TABLE DimStore (
 ===============================================================*/
 
 CREATE TABLE DimOrder (
-    OrderSK INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
+    OrderKey INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
     OrderID INT,
     CustomerID INT,
     StoreID INT,
@@ -194,19 +140,47 @@ CREATE TABLE DimOrder (
 ===============================================================*/
 
 CREATE TABLE FactSales (
-    SalesSK INT IDENTITY(1,1) PRIMARY KEY,        ---Surrogate Key
-    OrderID INT,                       -- Factura / Orden
-    ProductSK INT,                     -- Relación con DimProduct
-    CustomerSK INT,                    -- Relación con DimCustomer
-    EmployeeSK INT,                    -- Relación con DimEmployee
-    StoreSK INT,                       -- Relación con DimStore
-    DateOrderSK INT,                   -- Fecha de la orden
-    DateRequiredSK INT,                -- Fecha requerida
-    DateShippedSK INT,                 -- Fecha envío
+    SalesKey INT IDENTITY(1,1),        ---Surrogate Key
+    OrderKey INT,                       -- Factura / Orden
+    ProductKey INT,                     -- Relación con DimProduct
+    CustomerKey INT,                    -- Relación con DimCustomer
+    EmployeeKey INT,                    -- Relación con DimEmployee
+    StoreKey INT,                       -- Relación con DimStore
+    DateOrderKey INT,                   -- Fecha de la orden
+    DateRequiredKey INT,                -- Fecha requerida
+    DateShippedKey INT,                 -- Fecha envío
     Quantity INT,                      -- Cantidad vendida
     UnitPrice DECIMAL(10,2),           -- Precio por unidad
     Discount DECIMAL(10,2),            -- Descuento aplicado
     LineTotal DECIMAL(18,2),           -- Total de la línea
     InvoiceCount INT                   -- Conteo de facturas (1 por orden)
-);
-
+PRIMARY KEY CLUSTERED 
+(
+	SalesKey ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([CustomerKey])
+REFERENCES [dbo].[DimCustomer] ([CustomerKey])
+GO
+ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([EmployeeKey])
+REFERENCES [dbo].[DimEmployee] ([EmployeeKey])
+GO
+ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([OrderKey])
+REFERENCES [dbo].[DimOrder] ([OrderKey])
+GO
+ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([StoreKey])
+REFERENCES [dbo].[DimStore] ([StoreKey])
+GO
+ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([DateOrderKey])
+REFERENCES [dbo].[DimDate] ([DateKey])
+GO
+ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([ProductKey])
+REFERENCES [dbo].[DimProduct] ([ProductKey])
+GO
+ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([DateRequiredKey])
+REFERENCES [dbo].[DimDate] ([DateKey])
+GO
+ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([DateShippedKey])
+REFERENCES [dbo].[DimDate] ([DateKey])
+GO
