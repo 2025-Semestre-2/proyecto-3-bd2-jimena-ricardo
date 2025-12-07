@@ -3,21 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.36631.11
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{D2ABAB84-BF74-430A-B69E-9DC6D40DDA17}") = "cube", "cube\cube.dwproj", "{C7FDAC00-458F-491F-A59F-AE82760074A4}"
+Project("{D2ABAB84-BF74-430A-B69E-9DC6D40DDA17}") = "cube", "cube\cube.dwproj", "{0D0B4355-3AEC-420A-9F20-644FDED23171}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Development|Default = Development|Default
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C7FDAC00-458F-491F-A59F-AE82760074A4}.Development|Default.ActiveCfg = Development
-		{C7FDAC00-458F-491F-A59F-AE82760074A4}.Development|Default.Build.0 = Development
-		{C7FDAC00-458F-491F-A59F-AE82760074A4}.Development|Default.Deploy.0 = Development
+		{0D0B4355-3AEC-420A-9F20-644FDED23171}.Development|Default.ActiveCfg = Development
+		{0D0B4355-3AEC-420A-9F20-644FDED23171}.Development|Default.Build.0 = Development
+		{0D0B4355-3AEC-420A-9F20-644FDED23171}.Development|Default.Deploy.0 = Development
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1FBB61BC-0B33-4289-8322-73E8FA4F2BEF}
+		SolutionGuid = {A732A3B1-D4C8-43AC-AC12-A7289C421787}
 	EndGlobalSection
 EndGlobal

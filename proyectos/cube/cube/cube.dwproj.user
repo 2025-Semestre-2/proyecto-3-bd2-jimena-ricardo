@@ -3,7 +3,31 @@
     <Configuration>
       <Name>Development</Name>
       <Options>
-        <TargetServer>localhost</TargetServer>
+        <UserIDs>
+          <ConfigurationSetting>
+            <Id>Bike Stores DW</Id>
+            <Name>Bike Stores DW</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAl+nzp7JaT0qITqrCCknmdAAAAAAeAAAAQgBpAGsAZQAgAFMAdABvAHIAZQBzACAARABXAAAAEGYAAAABAAAgAAAAbpevswYFw4OuEcXz3BflC1wAB6gbXZtgk0UlU06hVAgAAAAADoAAAAACAAAgAAAA+5J0NJWwLFJb52o69Wf5DvLRxYfgpcmNsDRhtvtV1ysQAAAAEAztRTTJrQ+Nn+thI15CfEAAAADpVJKLxa3+DJT2Z0/sIHmL+5T+iR4OyliNE7EZUFVZR7Lfzydojip5gvA60VDPHhZVMWWCWQpN8XVGtI+J5L5A</Value>
+          </ConfigurationSetting>
+          <ConfigurationSetting>
+            <Id>Bike Stores DW 1</Id>
+            <Name>Bike Stores DW 1</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAl+nzp7JaT0qITqrCCknmdAAAAAAiAAAAQgBpAGsAZQAgAFMAdABvAHIAZQBzACAARABXACAAMQAAABBmAAAAAQAAIAAAAJGUCRjdyZCJJuP/MeQ3bCDWGf/uM6HziMcfEtm6S9/bAAAAAA6AAAAAAgAAIAAAABIpIiiXwHUy/7IPe9GiZGtqEpZRDoUBBilEmr2H7nOlEAAAAGNcuMEDQMEbV8eLnxWAU2ZAAAAAw3j+LMsi1OHCjN9YZq2VmKN5i6nRzkOehQrG1ehH2eHqsezUGEWs7G8iji96qgzSrhHagWQWxrJS86kYyUHFdA==</Value>
+          </ConfigurationSetting>
+        </UserIDs>
+        <UserPasswords>
+          <ConfigurationSetting>
+            <Id>Bike Stores DW</Id>
+            <Name>Bike Stores DW</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAl+nzp7JaT0qITqrCCknmdAAAAAAeAAAAQgBpAGsAZQAgAFMAdABvAHIAZQBzACAARABXAAAAEGYAAAABAAAgAAAAIbDDtd1vjeizSZRW0EK8FlBBYIvSqTnOM9zlWaxN9h0AAAAADoAAAAACAAAgAAAAvgD/qkEuJ9rVqvLq5GO6VabCCr8HXRg411XpaH0zS1IgAAAAP9KcPkwFvAeZ1mjIUc0/2Dhe3BLfVq4X/cPlFtzNaOhAAAAARORO4I/9EZ29Q7ccANGXAGtjVMdMRwvlD3NbCg1lHeCV3nlcBT10RgMUephI0HT7Oo1MJVdBif8pUS+IlaUf/Q==</Value>
+          </ConfigurationSetting>
+          <ConfigurationSetting>
+            <Id>Bike Stores DW 1</Id>
+            <Name>Bike Stores DW 1</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAl+nzp7JaT0qITqrCCknmdAAAAAAiAAAAQgBpAGsAZQAgAFMAdABvAHIAZQBzACAARABXACAAMQAAABBmAAAAAQAAIAAAAKJruJ6vILggRcu7YhHVYkTe6knu+V+GMQxKA5CovQ8WAAAAAA6AAAAAAgAAIAAAAAqWeObKn2ZT6BTNK3tsP3xvUMeA4qVL5DxKZntr7s3lIAAAANq20h0m8jvgJDBb93B2nosoHD3b5flG1NmZ5jFtt8JZQAAAAN6PyqhtKGhqqZKnsUTF8OTFwYT2WoyCRsxO6uBFiMnIs67eQU7Be/FoNb9PSS5Ca5noGxVrYKNzrPcjU2R4mjI=</Value>
+          </ConfigurationSetting>
+        </UserPasswords>
+        <TargetServer>LAPTOP-NHTRS4E4\MYSQLSERVER</TargetServer>
         <TargetDatabase>cube</TargetDatabase>
         <StartObject>
           <ObjectId></ObjectId>

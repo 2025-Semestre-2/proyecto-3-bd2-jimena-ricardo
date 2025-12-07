@@ -6,12 +6,24 @@
     <Name>cube.database</Name>
     <FullPath>cube.database</FullPath>
   </Database>
+  <Dimensions>
+    <ProjectItem>
+      <Name>Dim Product.dim</Name>
+      <FullPath>Dim Product.dim</FullPath>
+    </ProjectItem>
+  </Dimensions>
   <DataSources>
     <ProjectItem>
       <Name>Bike Stores DW.ds</Name>
       <FullPath>Bike Stores DW.ds</FullPath>
     </ProjectItem>
   </DataSources>
+  <DataSourceViews>
+    <ProjectItem>
+      <Name>Bike Stores DW.dsv</Name>
+      <FullPath>Bike Stores DW.dsv</FullPath>
+    </ProjectItem>
+  </DataSourceViews>
   <Configurations>
     <Configuration>
       <Name>Development</Name>
