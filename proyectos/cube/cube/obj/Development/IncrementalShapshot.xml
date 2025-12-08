@@ -33,9 +33,51 @@
       </ObjectSnapshot>
       <ObjectSnapshot>
         <Type>Microsoft.AnalysisServices.Dimension</Type>
-        <TimeStamp>xObV11Lg2bqD1ghpirDhoD3QdLo=7/12/2025 18:16:417/12/2025 17:58:54</TimeStamp>
+        <TimeStamp>suUR1lS7exIMR4T9MbWYdNs4+K4=7/12/2025 20:48:267/12/2025 20:26:18</TimeStamp>
+        <ID>
+          <String>Dim Order</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>mjIz4tS6iP6ELfOze2foU+6fOb8=7/12/2025 20:48:267/12/2025 20:48:26</TimeStamp>
+        <ID>
+          <String>Dim Date</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>E1PR8QrezRaL+iXbXMF6l501fH4=7/12/2025 20:48:267/12/2025 20:48:26</TimeStamp>
         <ID>
           <String>Dim Product</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>nZR8uaSF89qtTM/xA2x+EXLNSfQ=7/12/2025 20:48:267/12/2025 20:48:26</TimeStamp>
+        <ID>
+          <String>Dim Customer</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>x4Ub1ogf+smOOhYH/Oi/og0LNvY=7/12/2025 20:48:267/12/2025 20:48:26</TimeStamp>
+        <ID>
+          <String>Dim Store</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Dimension</Type>
+        <TimeStamp>0XluUYJ1qM4aY+0vCsPnAaYXMlY=7/12/2025 20:48:267/12/2025 20:48:26</TimeStamp>
+        <ID>
+          <String>Dim Employee</String>
+        </ID>
+      </ObjectSnapshot>
+      <ObjectSnapshot>
+        <Type>Microsoft.AnalysisServices.Cube</Type>
+        <TimeStamp>nj6FwKTkiJNI++0gZYuPtrAtBAE=7/12/2025 20:48:267/12/2025 20:48:26XXriU1bRCP2LstgSaQp39q9g0lk=7/12/2025 20:48:267/12/2025 20:48:26</TimeStamp>
+        <ID>
+          <String>Bike Stores DW</String>
         </ID>
       </ObjectSnapshot>
     </ObjectSnapshots>
@@ -50,5 +92,5 @@
   </Snapshot>
   <AssemblyLocations />
   <ProcessingComplete>true</ProcessingComplete>
-  <LastDeployed>2025-12-08T00:16:47.636667Z</LastDeployed>
+  <LastDeployed>2025-12-08T02:48:37.763333Z</LastDeployed>
 </DeploymentSnapshot>
