@@ -13,22 +13,28 @@
     </DataSources>
     <Dimensions>
       <Dimension>
-        <ID>Dim Order</ID>
-      </Dimension>
-      <Dimension>
-        <ID>Dim Date</ID>
+        <ID>Dim Employee</ID>
       </Dimension>
       <Dimension>
         <ID>Dim Product</ID>
       </Dimension>
       <Dimension>
-        <ID>Dim Customer</ID>
+        <ID>Dim Order</ID>
       </Dimension>
       <Dimension>
         <ID>Dim Store</ID>
       </Dimension>
       <Dimension>
-        <ID>Dim Employee</ID>
+        <ID>Dim Customer</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Dim Date Order</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Dim Date Required</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Dim Date Shipped</ID>
       </Dimension>
     </Dimensions>
     <Cubes>
