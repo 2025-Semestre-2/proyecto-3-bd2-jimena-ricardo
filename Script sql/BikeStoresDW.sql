@@ -1,30 +1,45 @@
 --CREATE DATABASE BikeStoresDW;
-
 USE BikeStoresDW;
 
-/*==============================================================
-    DIMDATE (SCD1)
-    - Necesaria porque el proyecto requiere análisis por día,
-      mes, año y filtros por rango de fechas.
-    - Se usa para 3 fechas del negocio:
-        -> Fecha de Orden
-        -> Fecha Requerida
-        -> Fecha Envío
-===============================================================*/
-use BikeStoresDW
-
-CREATE TABLE DimDate (
-    DateKey INT PRIMARY KEY,          
-    FullDate DATE NOT NULL,
-    Year INT NOT NULL,
-    Quarter INT NOT NULL,
-    Month INT NOT NULL,
-    MonthName VARCHAR(20),
-    Day INT NOT NULL,
-    DayOfWeek INT NOT NULL,
-    DayName VARCHAR(20)
-);
-
+CREATE TABLE	[dbo].[DimDate]
+	(	[DateKey] INT primary key, 
+		[Date] DATETIME,
+		[FullDateUK] CHAR(10), -- Date in dd-MM-yyyy format
+		[FullDateUSA] CHAR(10),-- Date in MM-dd-yyyy format
+		[DayOfMonth] VARCHAR(2), -- Field will hold day number of Month
+		[DaySuffix] VARCHAR(4), -- Apply suffix as 1st, 2nd ,3rd etc
+		[DayName] VARCHAR(9), -- Contains name of the day, Sunday, Monday 
+		[DayOfWeekUSA] CHAR(1),-- First Day Sunday=1 and Saturday=7
+		[DayOfWeekUK] CHAR(1),-- First Day Monday=1 and Sunday=7
+		[DayOfWeekInMonth] VARCHAR(2), --1st Monday or 2nd Monday in Month
+		[DayOfWeekInYear] VARCHAR(2),
+		[DayOfQuarter] VARCHAR(3),
+		[DayOfYear] VARCHAR(3),
+		[WeekOfMonth] VARCHAR(1),-- Week Number of Month 
+		[WeekOfQuarter] VARCHAR(2), --Week Number of the Quarter
+		[WeekOfYear] VARCHAR(2),--Week Number of the Year
+		[Month] VARCHAR(2), --Number of the Month 1 to 12
+		[MonthName] VARCHAR(9),--January, February etc
+		[MonthOfQuarter] VARCHAR(2),-- Month Number belongs to Quarter
+		[Quarter] CHAR(1),
+		[QuarterName] VARCHAR(9),--First,Second..
+		[Year] CHAR(4),-- Year value of Date stored in Row
+		[YearName] CHAR(7), --CY 2012,CY 2013
+		[MonthYear] CHAR(10), --Jan-2013,Feb-2013
+		[MMYYYY] CHAR(6),
+		[FirstDayOfMonth] DATE,
+		[LastDayOfMonth] DATE,
+		[FirstDayOfQuarter] DATE,
+		[LastDayOfQuarter] DATE,
+		[FirstDayOfYear] DATE,
+		[LastDayOfYear] DATE,
+		[IsHolidayUSA] BIT,-- Flag 1=National Holiday, 0-No National Holiday
+		[IsWeekday] BIT,-- 0=Week End ,1=Week Day
+		[HolidayUSA] VARCHAR(50),--Name of Holiday in US
+		[IsHolidayUK] BIT Null,-- Flag 1=National Holiday, 0-No National Holiday
+		[HolidayUK] VARCHAR(50) Null --Name of Holiday in UK
+	)
+GO
 
 
 /*==============================================================
@@ -62,8 +77,6 @@ CREATE TABLE DimEmployee (
     Email VARCHAR(255),
     Phone VARCHAR(255),
     Active TINYINT,
-    StoreID INT,
-    ManagerID INT,
     StartDate DATETIME,                    -- Para SCD2
     EndDate DATETIME                     -- Para SCD2
 );
@@ -117,10 +130,6 @@ CREATE TABLE DimStore (
 
 CREATE TABLE DimOrder (
     OrderKey INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
-    OrderID INT,
-    CustomerID INT,
-    StoreID INT,
-    StaffID INT,
     Status TINYINT
 );
 
