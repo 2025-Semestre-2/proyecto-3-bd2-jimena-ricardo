@@ -8,7 +8,7 @@
     <TransactionalDeployment>false</TransactionalDeployment>
     <PartitionDeployment>DeployPartitions</PartitionDeployment>
     <RoleDeployment>DeployRolesRetainMembers</RoleDeployment>
-    <ProcessingOption>Default</ProcessingOption>
+    <ProcessingOption>DoNotProcess</ProcessingOption>
     <OutputScript></OutputScript>
     <ImpactAnalysisFile></ImpactAnalysisFile>
     <ConfigurationSettingsDeployment>Deploy</ConfigurationSettingsDeployment>
@@ -19,21 +19,21 @@
     <ObjectSnapshots>
       <ObjectSnapshot>
         <Type>Microsoft.AnalysisServices.RelationalDataSource</Type>
-        <TimeStamp>/cv24+uceTP4+2Df+gBGO4pDtCg=7/12/2025 02:46:277/12/2025 02:46:27</TimeStamp>
+        <TimeStamp>z07K/743Rs8kPeQqZwgYjZ/flUM=7/12/2025 18:11:157/12/2025 17:58:14</TimeStamp>
         <ID>
           <String>Bike Stores DW</String>
         </ID>
       </ObjectSnapshot>
       <ObjectSnapshot>
         <Type>Microsoft.AnalysisServices.DataSourceView</Type>
-        <TimeStamp>Uivj+rx1UM+uZ6C9YRyOCz8/i40=7/12/2025 02:47:157/12/2025 02:47:14</TimeStamp>
+        <TimeStamp>LEJbH4VyP+1N6qPl9YjCg24BSfc=7/12/2025 17:58:267/12/2025 17:58:26</TimeStamp>
         <ID>
           <String>Bike Stores DW</String>
         </ID>
       </ObjectSnapshot>
       <ObjectSnapshot>
         <Type>Microsoft.AnalysisServices.Dimension</Type>
-        <TimeStamp>97Lre+phJ6vf4yv85ffI5m7Nd2s=7/12/2025 02:48:577/12/2025 02:48:56</TimeStamp>
+        <TimeStamp>xObV11Lg2bqD1ghpirDhoD3QdLo=7/12/2025 18:16:417/12/2025 17:58:54</TimeStamp>
         <ID>
           <String>Dim Product</String>
         </ID>
@@ -41,7 +41,7 @@
     </ObjectSnapshots>
     <DatabaseSnapshot>
       <Type>Microsoft.AnalysisServices.Database</Type>
-      <TimeStamp>jF1Ftl83CZgSSPX8J2U8hH0xfzY=7/12/2025 00:15:577/12/2025 00:15:56</TimeStamp>
+      <TimeStamp>jF1Ftl83CZgSSPX8J2U8hH0xfzY=7/12/2025 00:15:577/12/2025 02:53:09</TimeStamp>
       <ID>
         <String>cube</String>
       </ID>
@@ -49,6 +49,6 @@
     <Granularity>Coarse</Granularity>
   </Snapshot>
   <AssemblyLocations />
-  <ProcessingComplete>false</ProcessingComplete>
-  <LastDeployed>2025-12-07T08:50:31.083333Z</LastDeployed>
+  <ProcessingComplete>true</ProcessingComplete>
+  <LastDeployed>2025-12-08T00:16:47.636667Z</LastDeployed>
 </DeploymentSnapshot>
