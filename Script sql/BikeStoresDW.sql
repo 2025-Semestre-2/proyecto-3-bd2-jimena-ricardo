@@ -129,11 +129,10 @@ CREATE TABLE DimStore (
 ===============================================================*/
 
 CREATE TABLE DimOrder (
+	OrderID INT,
     OrderKey INT IDENTITY(1,1) PRIMARY KEY, ---Surrogate Key
     Status TINYINT
 );
-
-
 
 /*==============================================================
     FACTSALES (TABLA DE HECHOS)

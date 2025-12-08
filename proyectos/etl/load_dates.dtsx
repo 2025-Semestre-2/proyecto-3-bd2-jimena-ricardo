@@ -11,8 +11,8 @@
   DTS:LocaleID="5130"
   DTS:ObjectName="load_dates"
   DTS:PackageType="5"
-  DTS:VersionBuild="43"
-  DTS:VersionGUID="{AEB6F089-7AEA-42F3-9D3A-28A7ED273C1D}">
+  DTS:VersionBuild="45"
+  DTS:VersionGUID="{FAA8D18B-F942-40EC-AC94-EB2F627564DA}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:Variables>
@@ -45,36 +45,439 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Execute SQL Task"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="0">
+      DTS:ThreadHint="1">
       <DTS:Variables />
       <DTS:PropertyExpression
-        DTS:Name="SqlStatementSource">"DELETE FROM dbo.DimDate;DECLARE @d DATE = ?;
-DECLARE @maxd DATE = ?;
+        DTS:Name="SqlStatementSource">"
+delete from dbo.DimDate;
 
-WHILE @d &lt;= @maxd
+/********************************************************************************************/
+--Specify Start Date and End date here
+--Value of Start Date Must be Less than Your End Date 
+
+DECLARE @StartDate DATETIME = ? --Starting value of Date Range
+DECLARE @EndDate DATETIME = ? --End Value of Date Range
+
+--Temporary Variables To Hold the Values During Processing of Each Date of Year
+DECLARE
+	@DayOfWeekInMonth INT,
+	@DayOfWeekInYear INT,
+	@DayOfQuarter INT,
+	@WeekOfMonth INT,
+	@CurrentYear INT,
+	@CurrentMonth INT,
+	@CurrentQuarter INT
+
+/*Table Data type to store the day of week count for the month and year*/
+DECLARE @DayOfWeek TABLE (DOW INT, MonthCount INT, QuarterCount INT, YearCount INT)
+
+INSERT INTO @DayOfWeek VALUES (1, 0, 0, 0)
+INSERT INTO @DayOfWeek VALUES (2, 0, 0, 0)
+INSERT INTO @DayOfWeek VALUES (3, 0, 0, 0)
+INSERT INTO @DayOfWeek VALUES (4, 0, 0, 0)
+INSERT INTO @DayOfWeek VALUES (5, 0, 0, 0)
+INSERT INTO @DayOfWeek VALUES (6, 0, 0, 0)
+INSERT INTO @DayOfWeek VALUES (7, 0, 0, 0)
+
+--Extract and assign various parts of Values from Current Date to Variable
+
+DECLARE @CurrentDate AS DATETIME = @StartDate
+SET @CurrentMonth = DATEPART(MM, @CurrentDate)
+SET @CurrentYear = DATEPART(YY, @CurrentDate)
+SET @CurrentQuarter = DATEPART(QQ, @CurrentDate)
+
+/********************************************************************************************/
+--Proceed only if Start Date(Current date ) is less than End date you specified above
+
+WHILE @CurrentDate &lt; @EndDate
 BEGIN
-    INSERT INTO dbo.DimDate (
-        DateKey, FullDate, Year, Quarter, Month, MonthName, Day, DayOfWeek, DayName
-    ) 
-    VALUES (
-        CONVERT(char(8), @d, 112),
-        @d,
-        YEAR(@d),
-        DATEPART(QUARTER, @d),
-        MONTH(@d),
-        DATENAME(MONTH, @d),
-        DAY(@d),
-        DATEPART(WEEKDAY, @d),
-        DATENAME(WEEKDAY, @d)
-    );
+ 
+/*Begin day of week logic*/
 
-    SET @d = DATEADD(DAY, 1, @d);
-END;
+         /*Check for Change in Month of the Current date if Month changed then 
+          Change variable value*/
+	IF @CurrentMonth != DATEPART(MM, @CurrentDate) 
+	BEGIN
+		UPDATE @DayOfWeek
+		SET MonthCount = 0
+		SET @CurrentMonth = DATEPART(MM, @CurrentDate)
+	END
+
+        /* Check for Change in Quarter of the Current date if Quarter changed then change 
+         Variable value*/
+
+	IF @CurrentQuarter != DATEPART(QQ, @CurrentDate)
+	BEGIN
+		UPDATE @DayOfWeek
+		SET QuarterCount = 0
+		SET @CurrentQuarter = DATEPART(QQ, @CurrentDate)
+	END
+       
+        /* Check for Change in Year of the Current date if Year changed then change 
+         Variable value*/
+	
+
+	IF @CurrentYear != DATEPART(YY, @CurrentDate)
+	BEGIN
+		UPDATE @DayOfWeek
+		SET YearCount = 0
+		SET @CurrentYear = DATEPART(YY, @CurrentDate)
+	END
+	
+        -- Set values in table data type created above from variables 
+
+	UPDATE @DayOfWeek
+	SET 
+		MonthCount = MonthCount + 1,
+		QuarterCount = QuarterCount + 1,
+		YearCount = YearCount + 1
+	WHERE DOW = DATEPART(DW, @CurrentDate)
+
+	SELECT
+		@DayOfWeekInMonth = MonthCount,
+		@DayOfQuarter = QuarterCount,
+		@DayOfWeekInYear = YearCount
+	FROM @DayOfWeek
+	WHERE DOW = DATEPART(DW, @CurrentDate)
+	
+/*End day of week logic*/
+
+
+/* Populate Your Dimension Table with values*/
+	
+	INSERT INTO [dbo].[DimDate]
+	SELECT
+		
+		CONVERT (char(8),@CurrentDate,112) as DateKey,
+		@CurrentDate AS Date,
+		CONVERT (char(10),@CurrentDate,103) as FullDateUK,
+		CONVERT (char(10),@CurrentDate,101) as FullDateUSA,
+		DATEPART(DD, @CurrentDate) AS DayOfMonth,
+		--Apply Suffix values like 1st, 2nd 3rd etc..
+		CASE 
+			WHEN DATEPART(DD,@CurrentDate) IN (11,12,13) 
+			THEN CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'th'
+			WHEN RIGHT(DATEPART(DD,@CurrentDate),1) = 1 
+			THEN CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'st'
+			WHEN RIGHT(DATEPART(DD,@CurrentDate),1) = 2 
+			THEN CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'nd'
+			WHEN RIGHT(DATEPART(DD,@CurrentDate),1) = 3 
+			THEN CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'rd'
+			ELSE CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'th' 
+			END AS DaySuffix,
+		
+		DATENAME(DW, @CurrentDate) AS DayName,
+		DATEPART(DW, @CurrentDate) AS DayOfWeekUSA,
+
+		-- check for day of week as Per US and change it as per UK format 
+		CASE DATEPART(DW, @CurrentDate)
+			WHEN 1 THEN 7
+			WHEN 2 THEN 1
+			WHEN 3 THEN 2
+			WHEN 4 THEN 3
+			WHEN 5 THEN 4
+			WHEN 6 THEN 5
+			WHEN 7 THEN 6
+			END 
+			AS DayOfWeekUK,
+		
+		@DayOfWeekInMonth AS DayOfWeekInMonth,
+		@DayOfWeekInYear AS DayOfWeekInYear,
+		@DayOfQuarter AS DayOfQuarter,
+		DATEPART(DY, @CurrentDate) AS DayOfYear,
+		DATEPART(WW, @CurrentDate) + 1 - DATEPART(WW, CONVERT(VARCHAR, 
+		DATEPART(MM, @CurrentDate)) + '/1/' + CONVERT(VARCHAR, 
+		DATEPART(YY, @CurrentDate))) AS WeekOfMonth,
+		(DATEDIFF(DD, DATEADD(QQ, DATEDIFF(QQ, 0, @CurrentDate), 0), 
+		@CurrentDate) / 7) + 1 AS WeekOfQuarter,
+		DATEPART(WW, @CurrentDate) AS WeekOfYear,
+		DATEPART(MM, @CurrentDate) AS Month,
+		DATENAME(MM, @CurrentDate) AS MonthName,
+		CASE
+			WHEN DATEPART(MM, @CurrentDate) IN (1, 4, 7, 10) THEN 1
+			WHEN DATEPART(MM, @CurrentDate) IN (2, 5, 8, 11) THEN 2
+			WHEN DATEPART(MM, @CurrentDate) IN (3, 6, 9, 12) THEN 3
+			END AS MonthOfQuarter,
+		DATEPART(QQ, @CurrentDate) AS Quarter,
+		CASE DATEPART(QQ, @CurrentDate)
+			WHEN 1 THEN 'First'
+			WHEN 2 THEN 'Second'
+			WHEN 3 THEN 'Third'
+			WHEN 4 THEN 'Fourth'
+			END AS QuarterName,
+		DATEPART(YEAR, @CurrentDate) AS Year,
+		'CY ' + CONVERT(VARCHAR, DATEPART(YEAR, @CurrentDate)) AS YearName,
+		LEFT(DATENAME(MM, @CurrentDate), 3) + '-' + CONVERT(VARCHAR, 
+		DATEPART(YY, @CurrentDate)) AS MonthYear,
+		RIGHT('0' + CONVERT(VARCHAR, DATEPART(MM, @CurrentDate)),2) + 
+		CONVERT(VARCHAR, DATEPART(YY, @CurrentDate)) AS MMYYYY,
+		CONVERT(DATETIME, CONVERT(DATE, DATEADD(DD, - (DATEPART(DD, 
+		@CurrentDate) - 1), @CurrentDate))) AS FirstDayOfMonth,
+		CONVERT(DATETIME, CONVERT(DATE, DATEADD(DD, - (DATEPART(DD, 
+		(DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, 
+		@CurrentDate)))) AS LastDayOfMonth,
+		DATEADD(QQ, DATEDIFF(QQ, 0, @CurrentDate), 0) AS FirstDayOfQuarter,
+		DATEADD(QQ, DATEDIFF(QQ, -1, @CurrentDate), -1) AS LastDayOfQuarter,
+		CONVERT(DATETIME, '01/01/' + CONVERT(VARCHAR, DATEPART(YY, 
+		@CurrentDate))) AS FirstDayOfYear,
+		CONVERT(DATETIME, '12/31/' + CONVERT(VARCHAR, DATEPART(YY, 
+		@CurrentDate))) AS LastDayOfYear,
+		NULL AS IsHolidayUSA,
+		CASE DATEPART(DW, @CurrentDate)
+			WHEN 1 THEN 0
+			WHEN 2 THEN 1
+			WHEN 3 THEN 1
+			WHEN 4 THEN 1
+			WHEN 5 THEN 1
+			WHEN 6 THEN 1
+			WHEN 7 THEN 0
+			END AS IsWeekday,
+		NULL AS HolidayUSA, Null, Null
+
+	SET @CurrentDate = DATEADD(DD, 1, @CurrentDate)
+END
+
+/********************************************************************************************/
+ 
+--Step 3.
+--Update Values of Holiday as per UK Government Declaration for National Holiday.
+
+/*Update HOLIDAY fields of UK as per Govt. Declaration of National Holiday*/
+	
+-- Good Friday  April 18 
+	UPDATE [dbo].[DimDate]
+		SET HolidayUK = 'Good Friday'
+	WHERE [Month] = 4 AND [DayOfMonth]  = 18
+
+-- Easter Monday  April 21 
+	UPDATE [dbo].[DimDate]
+		SET HolidayUK = 'Easter Monday'
+	WHERE [Month] = 4 AND [DayOfMonth]  = 21
+
+-- Early May Bank Holiday   May 5 
+   UPDATE [dbo].[DimDate]
+		SET HolidayUK = 'Early May Bank Holiday'
+	WHERE [Month] = 5 AND [DayOfMonth]  = 5
+
+-- Spring Bank Holiday  May 26 
+	UPDATE [dbo].[DimDate]
+		SET HolidayUK = 'Spring Bank Holiday'
+	WHERE [Month] = 5 AND [DayOfMonth]  = 26
+
+-- Summer Bank Holiday  August 25 
+    UPDATE [dbo].[DimDate]
+		SET HolidayUK = 'Summer Bank Holiday'
+	WHERE [Month] = 8 AND [DayOfMonth]  = 25
+
+-- Boxing Day  December 26  	
+    UPDATE [dbo].[DimDate]
+		SET HolidayUK = 'Boxing Day'
+	WHERE [Month] = 12 AND [DayOfMonth]  = 26	
+
+--CHRISTMAS
+	UPDATE [dbo].[DimDate]
+		SET HolidayUK = 'Christmas Day'
+	WHERE [Month] = 12 AND [DayOfMonth]  = 25
+
+--New Years Day
+	UPDATE [dbo].[DimDate]
+		SET HolidayUK  = 'New Year''s Day'
+	WHERE [Month] = 1 AND [DayOfMonth] = 1
+
+--Update flag for UK Holidays 1= Holiday, 0=No Holiday
+	
+	UPDATE [dbo].[DimDate]
+		SET IsHolidayUK  = CASE WHEN HolidayUK   IS NULL 
+		THEN 0 WHEN HolidayUK   IS NOT NULL THEN 1 END
+		
+ 
+--Step 4.
+--Update Values of Holiday as per USA Govt. Declaration for National Holiday.
+
+/*Update HOLIDAY Field of USA In dimension*/
+	
+ 	/*THANKSGIVING - Fourth THURSDAY in November*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Thanksgiving Day'
+	WHERE
+		[Month] = 11 
+		AND [DayOfWeekUSA] = 'Thursday' 
+		AND DayOfWeekInMonth = 4
+
+	/*CHRISTMAS*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Christmas Day'
+		
+	WHERE [Month] = 12 AND [DayOfMonth]  = 25
+
+	/*4th of July*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Independance Day'
+	WHERE [Month] = 7 AND [DayOfMonth] = 4
+
+	/*New Years Day*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'New Year''s Day'
+	WHERE [Month] = 1 AND [DayOfMonth] = 1
+
+	/*Memorial Day - Last Monday in May*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Memorial Day'
+	FROM [dbo].[DimDate]
+	WHERE DateKey IN 
+		(
+		SELECT
+			MAX(DateKey)
+		FROM [dbo].[DimDate]
+		WHERE
+			[MonthName] = 'May'
+			AND [DayOfWeekUSA]  = 'Monday'
+		GROUP BY
+			[Year],
+			[Month]
+		)
+
+	/*Labor Day - First Monday in September*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Labor Day'
+	FROM [dbo].[DimDate]
+	WHERE DateKey IN 
+		(
+		SELECT
+			MIN(DateKey)
+		FROM [dbo].[DimDate]
+		WHERE
+			[MonthName] = 'September'
+			AND [DayOfWeekUSA] = 'Monday'
+		GROUP BY
+			[Year],
+			[Month]
+		)
+
+	/*Valentine's Day*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Valentine''s Day'
+	WHERE
+		[Month] = 2 
+		AND [DayOfMonth] = 14
+
+	/*Saint Patrick's Day*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Saint Patrick''s Day'
+	WHERE
+		[Month] = 3
+		AND [DayOfMonth] = 17
+
+	/*Martin Luthor King Day - Third Monday in January starting in 1983*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Martin Luthor King Jr Day'
+	WHERE
+		[Month] = 1
+		AND [DayOfWeekUSA]  = 'Monday'
+		AND [Year] &gt;= 1983
+		AND DayOfWeekInMonth = 3
+
+	/*President's Day - Third Monday in February*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'President''s Day'
+	WHERE
+		[Month] = 2
+		AND [DayOfWeekUSA] = 'Monday'
+		AND DayOfWeekInMonth = 3
+
+	/*Mother's Day - Second Sunday of May*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Mother''s Day'
+	WHERE
+		[Month] = 5
+		AND [DayOfWeekUSA] = 'Sunday'
+		AND DayOfWeekInMonth = 2
+
+	/*Father's Day - Third Sunday of June*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Father''s Day'
+	WHERE
+		[Month] = 6
+		AND [DayOfWeekUSA] = 'Sunday'
+		AND DayOfWeekInMonth = 3
+
+	/*Halloween 10/31*/
+	UPDATE [dbo].[DimDate]
+		SET HolidayUSA = 'Halloween'
+	WHERE
+		[Month] = 10
+		AND [DayOfMonth] = 31
+
+	/*Election Day - The first Tuesday after the first Monday in November*/
+	BEGIN
+	DECLARE @Holidays TABLE (ID INT IDENTITY(1,1), 
+	DateID int, Week TINYINT, YEAR CHAR(4), DAY CHAR(2))
+
+		INSERT INTO @Holidays(DateID, [Year],[Day])
+		SELECT
+			DateKey,
+			[Year],
+			[DayOfMonth] 
+		FROM [dbo].[DimDate]
+		WHERE
+			[Month] = 11
+			AND [DayOfWeekUSA] = 'Monday'
+		ORDER BY
+			YEAR,
+			DayOfMonth 
+
+		DECLARE @CNTR INT, @POS INT, @STARTYEAR INT, @ENDYEAR INT, @MINDAY INT
+
+		SELECT
+			@CURRENTYEAR = MIN([Year])
+			, @STARTYEAR = MIN([Year])
+			, @ENDYEAR = MAX([Year])
+		FROM @Holidays
+
+		WHILE @CURRENTYEAR &lt;= @ENDYEAR
+		BEGIN
+			SELECT @CNTR = COUNT([Year])
+			FROM @Holidays
+			WHERE [Year] = @CURRENTYEAR
+
+			SET @POS = 1
+
+			WHILE @POS &lt;= @CNTR
+			BEGIN
+				SELECT @MINDAY = MIN(DAY)
+				FROM @Holidays
+				WHERE
+					[Year] = @CURRENTYEAR
+					AND [Week] IS NULL
+
+				UPDATE @Holidays
+					SET [Week] = @POS
+				WHERE
+					[Year] = @CURRENTYEAR
+					AND [Day] = @MINDAY
+
+				SELECT @POS = @POS + 1
+			END
+
+			SELECT @CURRENTYEAR = @CURRENTYEAR + 1
+		END
+
+		UPDATE [dbo].[DimDate]
+			SET HolidayUSA  = 'Election Day'				
+		FROM [dbo].[DimDate] DT
+			JOIN @Holidays HL ON (HL.DateID + 1) = DT.DateKey
+		WHERE
+			[Week] = 1
+	END
+	--set flag for USA holidays in Dimension
+	UPDATE [dbo].[DimDate]
+SET IsHolidayUSA = CASE WHEN HolidayUSA  IS NULL THEN 0 WHEN HolidayUSA  IS NOT NULL THEN 1 END
+
 "</DTS:PropertyExpression>
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{B346E5B7-697F-47FB-A96D-E9899A7F004C}"
-          SQLTask:SqlStatementSource="DELETE FROM dbo.DimDate;DECLARE @d DATE = ?;&#xA;DECLARE @maxd DATE = ?;&#xA;&#xA;WHILE @d &lt;= @maxd&#xA;BEGIN&#xA;    INSERT INTO dbo.DimDate (&#xA;        DateKey, FullDate, Year, Quarter, Month, MonthName, Day, DayOfWeek, DayName&#xA;    ) &#xA;    VALUES (&#xA;        CONVERT(char(8), @d, 112),&#xA;        @d,&#xA;        YEAR(@d),&#xA;        DATEPART(QUARTER, @d),&#xA;        MONTH(@d),&#xA;        DATENAME(MONTH, @d),&#xA;        DAY(@d),&#xA;        DATEPART(WEEKDAY, @d),&#xA;        DATENAME(WEEKDAY, @d)&#xA;    );&#xA;&#xA;    SET @d = DATEADD(DAY, 1, @d);&#xA;END;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          SQLTask:SqlStatementSource="&#xA;delete from dbo.DimDate;&#xA;&#xA;/********************************************************************************************/&#xA;--Specify Start Date and End date here&#xA;--Value of Start Date Must be Less than Your End Date &#xA;&#xA;DECLARE @StartDate DATETIME = ? --Starting value of Date Range&#xA;DECLARE @EndDate DATETIME = ? --End Value of Date Range&#xA;&#xA;--Temporary Variables To Hold the Values During Processing of Each Date of Year&#xA;DECLARE&#xA;&#x9;@DayOfWeekInMonth INT,&#xA;&#x9;@DayOfWeekInYear INT,&#xA;&#x9;@DayOfQuarter INT,&#xA;&#x9;@WeekOfMonth INT,&#xA;&#x9;@CurrentYear INT,&#xA;&#x9;@CurrentMonth INT,&#xA;&#x9;@CurrentQuarter INT&#xA;&#xA;/*Table Data type to store the day of week count for the month and year*/&#xA;DECLARE @DayOfWeek TABLE (DOW INT, MonthCount INT, QuarterCount INT, YearCount INT)&#xA;&#xA;INSERT INTO @DayOfWeek VALUES (1, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (2, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (3, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (4, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (5, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (6, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (7, 0, 0, 0)&#xA;&#xA;--Extract and assign various parts of Values from Current Date to Variable&#xA;&#xA;DECLARE @CurrentDate AS DATETIME = @StartDate&#xA;SET @CurrentMonth = DATEPART(MM, @CurrentDate)&#xA;SET @CurrentYear = DATEPART(YY, @CurrentDate)&#xA;SET @CurrentQuarter = DATEPART(QQ, @CurrentDate)&#xA;&#xA;/********************************************************************************************/&#xA;--Proceed only if Start Date(Current date ) is less than End date you specified above&#xA;&#xA;WHILE @CurrentDate &lt; @EndDate&#xA;BEGIN&#xA; &#xA;/*Begin day of week logic*/&#xA;&#xA;         /*Check for Change in Month of the Current date if Month changed then &#xA;          Change variable value*/&#xA;&#x9;IF @CurrentMonth != DATEPART(MM, @CurrentDate) &#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE @DayOfWeek&#xA;&#x9;&#x9;SET MonthCount = 0&#xA;&#x9;&#x9;SET @CurrentMonth = DATEPART(MM, @CurrentDate)&#xA;&#x9;END&#xA;&#xA;        /* Check for Change in Quarter of the Current date if Quarter changed then change &#xA;         Variable value*/&#xA;&#xA;&#x9;IF @CurrentQuarter != DATEPART(QQ, @CurrentDate)&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE @DayOfWeek&#xA;&#x9;&#x9;SET QuarterCount = 0&#xA;&#x9;&#x9;SET @CurrentQuarter = DATEPART(QQ, @CurrentDate)&#xA;&#x9;END&#xA;       &#xA;        /* Check for Change in Year of the Current date if Year changed then change &#xA;         Variable value*/&#xA;&#x9;&#xA;&#xA;&#x9;IF @CurrentYear != DATEPART(YY, @CurrentDate)&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE @DayOfWeek&#xA;&#x9;&#x9;SET YearCount = 0&#xA;&#x9;&#x9;SET @CurrentYear = DATEPART(YY, @CurrentDate)&#xA;&#x9;END&#xA;&#x9;&#xA;        -- Set values in table data type created above from variables &#xA;&#xA;&#x9;UPDATE @DayOfWeek&#xA;&#x9;SET &#xA;&#x9;&#x9;MonthCount = MonthCount + 1,&#xA;&#x9;&#x9;QuarterCount = QuarterCount + 1,&#xA;&#x9;&#x9;YearCount = YearCount + 1&#xA;&#x9;WHERE DOW = DATEPART(DW, @CurrentDate)&#xA;&#xA;&#x9;SELECT&#xA;&#x9;&#x9;@DayOfWeekInMonth = MonthCount,&#xA;&#x9;&#x9;@DayOfQuarter = QuarterCount,&#xA;&#x9;&#x9;@DayOfWeekInYear = YearCount&#xA;&#x9;FROM @DayOfWeek&#xA;&#x9;WHERE DOW = DATEPART(DW, @CurrentDate)&#xA;&#x9;&#xA;/*End day of week logic*/&#xA;&#xA;&#xA;/* Populate Your Dimension Table with values*/&#xA;&#x9;&#xA;&#x9;INSERT INTO [dbo].[DimDate]&#xA;&#x9;SELECT&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;CONVERT (char(8),@CurrentDate,112) as DateKey,&#xA;&#x9;&#x9;@CurrentDate AS Date,&#xA;&#x9;&#x9;CONVERT (char(10),@CurrentDate,103) as FullDateUK,&#xA;&#x9;&#x9;CONVERT (char(10),@CurrentDate,101) as FullDateUSA,&#xA;&#x9;&#x9;DATEPART(DD, @CurrentDate) AS DayOfMonth,&#xA;&#x9;&#x9;--Apply Suffix values like 1st, 2nd 3rd etc..&#xA;&#x9;&#x9;CASE &#xA;&#x9;&#x9;&#x9;WHEN DATEPART(DD,@CurrentDate) IN (11,12,13) &#xA;&#x9;&#x9;&#x9;THEN CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'th'&#xA;&#x9;&#x9;&#x9;WHEN RIGHT(DATEPART(DD,@CurrentDate),1) = 1 &#xA;&#x9;&#x9;&#x9;THEN CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'st'&#xA;&#x9;&#x9;&#x9;WHEN RIGHT(DATEPART(DD,@CurrentDate),1) = 2 &#xA;&#x9;&#x9;&#x9;THEN CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'nd'&#xA;&#x9;&#x9;&#x9;WHEN RIGHT(DATEPART(DD,@CurrentDate),1) = 3 &#xA;&#x9;&#x9;&#x9;THEN CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'rd'&#xA;&#x9;&#x9;&#x9;ELSE CAST(DATEPART(DD,@CurrentDate) AS VARCHAR) + 'th' &#xA;&#x9;&#x9;&#x9;END AS DaySuffix,&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;DATENAME(DW, @CurrentDate) AS DayName,&#xA;&#x9;&#x9;DATEPART(DW, @CurrentDate) AS DayOfWeekUSA,&#xA;&#xA;&#x9;&#x9;-- check for day of week as Per US and change it as per UK format &#xA;&#x9;&#x9;CASE DATEPART(DW, @CurrentDate)&#xA;&#x9;&#x9;&#x9;WHEN 1 THEN 7&#xA;&#x9;&#x9;&#x9;WHEN 2 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 3 THEN 2&#xA;&#x9;&#x9;&#x9;WHEN 4 THEN 3&#xA;&#x9;&#x9;&#x9;WHEN 5 THEN 4&#xA;&#x9;&#x9;&#x9;WHEN 6 THEN 5&#xA;&#x9;&#x9;&#x9;WHEN 7 THEN 6&#xA;&#x9;&#x9;&#x9;END &#xA;&#x9;&#x9;&#x9;AS DayOfWeekUK,&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;@DayOfWeekInMonth AS DayOfWeekInMonth,&#xA;&#x9;&#x9;@DayOfWeekInYear AS DayOfWeekInYear,&#xA;&#x9;&#x9;@DayOfQuarter AS DayOfQuarter,&#xA;&#x9;&#x9;DATEPART(DY, @CurrentDate) AS DayOfYear,&#xA;&#x9;&#x9;DATEPART(WW, @CurrentDate) + 1 - DATEPART(WW, CONVERT(VARCHAR, &#xA;&#x9;&#x9;DATEPART(MM, @CurrentDate)) + '/1/' + CONVERT(VARCHAR, &#xA;&#x9;&#x9;DATEPART(YY, @CurrentDate))) AS WeekOfMonth,&#xA;&#x9;&#x9;(DATEDIFF(DD, DATEADD(QQ, DATEDIFF(QQ, 0, @CurrentDate), 0), &#xA;&#x9;&#x9;@CurrentDate) / 7) + 1 AS WeekOfQuarter,&#xA;&#x9;&#x9;DATEPART(WW, @CurrentDate) AS WeekOfYear,&#xA;&#x9;&#x9;DATEPART(MM, @CurrentDate) AS Month,&#xA;&#x9;&#x9;DATENAME(MM, @CurrentDate) AS MonthName,&#xA;&#x9;&#x9;CASE&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (1, 4, 7, 10) THEN 1&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (2, 5, 8, 11) THEN 2&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (3, 6, 9, 12) THEN 3&#xA;&#x9;&#x9;&#x9;END AS MonthOfQuarter,&#xA;&#x9;&#x9;DATEPART(QQ, @CurrentDate) AS Quarter,&#xA;&#x9;&#x9;CASE DATEPART(QQ, @CurrentDate)&#xA;&#x9;&#x9;&#x9;WHEN 1 THEN 'First'&#xA;&#x9;&#x9;&#x9;WHEN 2 THEN 'Second'&#xA;&#x9;&#x9;&#x9;WHEN 3 THEN 'Third'&#xA;&#x9;&#x9;&#x9;WHEN 4 THEN 'Fourth'&#xA;&#x9;&#x9;&#x9;END AS QuarterName,&#xA;&#x9;&#x9;DATEPART(YEAR, @CurrentDate) AS Year,&#xA;&#x9;&#x9;'CY ' + CONVERT(VARCHAR, DATEPART(YEAR, @CurrentDate)) AS YearName,&#xA;&#x9;&#x9;LEFT(DATENAME(MM, @CurrentDate), 3) + '-' + CONVERT(VARCHAR, &#xA;&#x9;&#x9;DATEPART(YY, @CurrentDate)) AS MonthYear,&#xA;&#x9;&#x9;RIGHT('0' + CONVERT(VARCHAR, DATEPART(MM, @CurrentDate)),2) + &#xA;&#x9;&#x9;CONVERT(VARCHAR, DATEPART(YY, @CurrentDate)) AS MMYYYY,&#xA;&#x9;&#x9;CONVERT(DATETIME, CONVERT(DATE, DATEADD(DD, - (DATEPART(DD, &#xA;&#x9;&#x9;@CurrentDate) - 1), @CurrentDate))) AS FirstDayOfMonth,&#xA;&#x9;&#x9;CONVERT(DATETIME, CONVERT(DATE, DATEADD(DD, - (DATEPART(DD, &#xA;&#x9;&#x9;(DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, &#xA;&#x9;&#x9;@CurrentDate)))) AS LastDayOfMonth,&#xA;&#x9;&#x9;DATEADD(QQ, DATEDIFF(QQ, 0, @CurrentDate), 0) AS FirstDayOfQuarter,&#xA;&#x9;&#x9;DATEADD(QQ, DATEDIFF(QQ, -1, @CurrentDate), -1) AS LastDayOfQuarter,&#xA;&#x9;&#x9;CONVERT(DATETIME, '01/01/' + CONVERT(VARCHAR, DATEPART(YY, &#xA;&#x9;&#x9;@CurrentDate))) AS FirstDayOfYear,&#xA;&#x9;&#x9;CONVERT(DATETIME, '12/31/' + CONVERT(VARCHAR, DATEPART(YY, &#xA;&#x9;&#x9;@CurrentDate))) AS LastDayOfYear,&#xA;&#x9;&#x9;NULL AS IsHolidayUSA,&#xA;&#x9;&#x9;CASE DATEPART(DW, @CurrentDate)&#xA;&#x9;&#x9;&#x9;WHEN 1 THEN 0&#xA;&#x9;&#x9;&#x9;WHEN 2 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 3 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 4 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 5 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 6 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 7 THEN 0&#xA;&#x9;&#x9;&#x9;END AS IsWeekday,&#xA;&#x9;&#x9;NULL AS HolidayUSA, Null, Null&#xA;&#xA;&#x9;SET @CurrentDate = DATEADD(DD, 1, @CurrentDate)&#xA;END&#xA;&#xA;/********************************************************************************************/&#xA; &#xA;--Step 3.&#xA;--Update Values of Holiday as per UK Government Declaration for National Holiday.&#xA;&#xA;/*Update HOLIDAY fields of UK as per Govt. Declaration of National Holiday*/&#xA;&#x9;&#xA;-- Good Friday  April 18 &#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUK = 'Good Friday'&#xA;&#x9;WHERE [Month] = 4 AND [DayOfMonth]  = 18&#xA;&#xA;-- Easter Monday  April 21 &#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUK = 'Easter Monday'&#xA;&#x9;WHERE [Month] = 4 AND [DayOfMonth]  = 21&#xA;&#xA;-- Early May Bank Holiday   May 5 &#xA;   UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUK = 'Early May Bank Holiday'&#xA;&#x9;WHERE [Month] = 5 AND [DayOfMonth]  = 5&#xA;&#xA;-- Spring Bank Holiday  May 26 &#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUK = 'Spring Bank Holiday'&#xA;&#x9;WHERE [Month] = 5 AND [DayOfMonth]  = 26&#xA;&#xA;-- Summer Bank Holiday  August 25 &#xA;    UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUK = 'Summer Bank Holiday'&#xA;&#x9;WHERE [Month] = 8 AND [DayOfMonth]  = 25&#xA;&#xA;-- Boxing Day  December 26  &#x9;&#xA;    UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUK = 'Boxing Day'&#xA;&#x9;WHERE [Month] = 12 AND [DayOfMonth]  = 26&#x9;&#xA;&#xA;--CHRISTMAS&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUK = 'Christmas Day'&#xA;&#x9;WHERE [Month] = 12 AND [DayOfMonth]  = 25&#xA;&#xA;--New Years Day&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUK  = 'New Year''s Day'&#xA;&#x9;WHERE [Month] = 1 AND [DayOfMonth] = 1&#xA;&#xA;--Update flag for UK Holidays 1= Holiday, 0=No Holiday&#xA;&#x9;&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET IsHolidayUK  = CASE WHEN HolidayUK   IS NULL &#xA;&#x9;&#x9;THEN 0 WHEN HolidayUK   IS NOT NULL THEN 1 END&#xA;&#x9;&#x9;&#xA; &#xA;--Step 4.&#xA;--Update Values of Holiday as per USA Govt. Declaration for National Holiday.&#xA;&#xA;/*Update HOLIDAY Field of USA In dimension*/&#xA;&#x9;&#xA; &#x9;/*THANKSGIVING - Fourth THURSDAY in November*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Thanksgiving Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 11 &#xA;&#x9;&#x9;AND [DayOfWeekUSA] = 'Thursday' &#xA;&#x9;&#x9;AND DayOfWeekInMonth = 4&#xA;&#xA;&#x9;/*CHRISTMAS*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Christmas Day'&#xA;&#x9;&#x9;&#xA;&#x9;WHERE [Month] = 12 AND [DayOfMonth]  = 25&#xA;&#xA;&#x9;/*4th of July*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Independance Day'&#xA;&#x9;WHERE [Month] = 7 AND [DayOfMonth] = 4&#xA;&#xA;&#x9;/*New Years Day*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'New Year''s Day'&#xA;&#x9;WHERE [Month] = 1 AND [DayOfMonth] = 1&#xA;&#xA;&#x9;/*Memorial Day - Last Monday in May*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Memorial Day'&#xA;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;WHERE DateKey IN &#xA;&#x9;&#x9;(&#xA;&#x9;&#x9;SELECT&#xA;&#x9;&#x9;&#x9;MAX(DateKey)&#xA;&#x9;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;[MonthName] = 'May'&#xA;&#x9;&#x9;&#x9;AND [DayOfWeekUSA]  = 'Monday'&#xA;&#x9;&#x9;GROUP BY&#xA;&#x9;&#x9;&#x9;[Year],&#xA;&#x9;&#x9;&#x9;[Month]&#xA;&#x9;&#x9;)&#xA;&#xA;&#x9;/*Labor Day - First Monday in September*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Labor Day'&#xA;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;WHERE DateKey IN &#xA;&#x9;&#x9;(&#xA;&#x9;&#x9;SELECT&#xA;&#x9;&#x9;&#x9;MIN(DateKey)&#xA;&#x9;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;[MonthName] = 'September'&#xA;&#x9;&#x9;&#x9;AND [DayOfWeekUSA] = 'Monday'&#xA;&#x9;&#x9;GROUP BY&#xA;&#x9;&#x9;&#x9;[Year],&#xA;&#x9;&#x9;&#x9;[Month]&#xA;&#x9;&#x9;)&#xA;&#xA;&#x9;/*Valentine's Day*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Valentine''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 2 &#xA;&#x9;&#x9;AND [DayOfMonth] = 14&#xA;&#xA;&#x9;/*Saint Patrick's Day*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Saint Patrick''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 3&#xA;&#x9;&#x9;AND [DayOfMonth] = 17&#xA;&#xA;&#x9;/*Martin Luthor King Day - Third Monday in January starting in 1983*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Martin Luthor King Jr Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 1&#xA;&#x9;&#x9;AND [DayOfWeekUSA]  = 'Monday'&#xA;&#x9;&#x9;AND [Year] &gt;= 1983&#xA;&#x9;&#x9;AND DayOfWeekInMonth = 3&#xA;&#xA;&#x9;/*President's Day - Third Monday in February*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'President''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 2&#xA;&#x9;&#x9;AND [DayOfWeekUSA] = 'Monday'&#xA;&#x9;&#x9;AND DayOfWeekInMonth = 3&#xA;&#xA;&#x9;/*Mother's Day - Second Sunday of May*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Mother''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 5&#xA;&#x9;&#x9;AND [DayOfWeekUSA] = 'Sunday'&#xA;&#x9;&#x9;AND DayOfWeekInMonth = 2&#xA;&#xA;&#x9;/*Father's Day - Third Sunday of June*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Father''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 6&#xA;&#x9;&#x9;AND [DayOfWeekUSA] = 'Sunday'&#xA;&#x9;&#x9;AND DayOfWeekInMonth = 3&#xA;&#xA;&#x9;/*Halloween 10/31*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET HolidayUSA = 'Halloween'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 10&#xA;&#x9;&#x9;AND [DayOfMonth] = 31&#xA;&#xA;&#x9;/*Election Day - The first Tuesday after the first Monday in November*/&#xA;&#x9;BEGIN&#xA;&#x9;DECLARE @Holidays TABLE (ID INT IDENTITY(1,1), &#xA;&#x9;DateID int, Week TINYINT, YEAR CHAR(4), DAY CHAR(2))&#xA;&#xA;&#x9;&#x9;INSERT INTO @Holidays(DateID, [Year],[Day])&#xA;&#x9;&#x9;SELECT&#xA;&#x9;&#x9;&#x9;DateKey,&#xA;&#x9;&#x9;&#x9;[Year],&#xA;&#x9;&#x9;&#x9;[DayOfMonth] &#xA;&#x9;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;[Month] = 11&#xA;&#x9;&#x9;&#x9;AND [DayOfWeekUSA] = 'Monday'&#xA;&#x9;&#x9;ORDER BY&#xA;&#x9;&#x9;&#x9;YEAR,&#xA;&#x9;&#x9;&#x9;DayOfMonth &#xA;&#xA;&#x9;&#x9;DECLARE @CNTR INT, @POS INT, @STARTYEAR INT, @ENDYEAR INT, @MINDAY INT&#xA;&#xA;&#x9;&#x9;SELECT&#xA;&#x9;&#x9;&#x9;@CURRENTYEAR = MIN([Year])&#xA;&#x9;&#x9;&#x9;, @STARTYEAR = MIN([Year])&#xA;&#x9;&#x9;&#x9;, @ENDYEAR = MAX([Year])&#xA;&#x9;&#x9;FROM @Holidays&#xA;&#xA;&#x9;&#x9;WHILE @CURRENTYEAR &lt;= @ENDYEAR&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;SELECT @CNTR = COUNT([Year])&#xA;&#x9;&#x9;&#x9;FROM @Holidays&#xA;&#x9;&#x9;&#x9;WHERE [Year] = @CURRENTYEAR&#xA;&#xA;&#x9;&#x9;&#x9;SET @POS = 1&#xA;&#xA;&#x9;&#x9;&#x9;WHILE @POS &lt;= @CNTR&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;SELECT @MINDAY = MIN(DAY)&#xA;&#x9;&#x9;&#x9;&#x9;FROM @Holidays&#xA;&#x9;&#x9;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;[Year] = @CURRENTYEAR&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;AND [Week] IS NULL&#xA;&#xA;&#x9;&#x9;&#x9;&#x9;UPDATE @Holidays&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;SET [Week] = @POS&#xA;&#x9;&#x9;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;[Year] = @CURRENTYEAR&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;AND [Day] = @MINDAY&#xA;&#xA;&#x9;&#x9;&#x9;&#x9;SELECT @POS = @POS + 1&#xA;&#x9;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;&#x9;SELECT @CURRENTYEAR = @CURRENTYEAR + 1&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;&#x9;SET HolidayUSA  = 'Election Day'&#x9;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;FROM [dbo].[DimDate] DT&#xA;&#x9;&#x9;&#x9;JOIN @Holidays HL ON (HL.DateID + 1) = DT.DateKey&#xA;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;[Week] = 1&#xA;&#x9;END&#xA;&#x9;--set flag for USA holidays in Dimension&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;SET IsHolidayUSA = CASE WHEN HolidayUSA  IS NULL THEN 0 WHEN HolidayUSA  IS NOT NULL THEN 1 END&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ParameterBinding
             SQLTask:ParameterName="1"
             SQLTask:DtsVariableName="User::max_order_date"
@@ -99,7 +502,7 @@ END;
       DTS:LocaleID="-1"
       DTS:ObjectName="max_date"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="0">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -144,7 +547,7 @@ END;
       DTS:LocaleID="-1"
       DTS:ObjectName="populate_dimdates"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="2">
+      DTS:ThreadHint="0">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -185,31 +588,31 @@ END;
       DTS:To="Package\Execute SQL Task" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
-<!--Esta sección CDATA contiene la información de diseño del paquete. Esta sección incluye información como, por ejemplo, las coordenadas (x,y), el ancho y el alto.-->
-<!--Si edita manualmente esta sección y comete un error, puede eliminarlo. -->
-<!--El paquete podrá cargarse normalmente, pero se perderá la información de diseño anterior y el diseñador reorganizará los elementos automáticamente en la superficie de diseño.-->
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
 <Objects
   Version="8">
-  <!--Cada uno de los nodos siguientes contiene propiedades que no afectan al comportamiento en tiempo de ejecución.-->
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
   <Package
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="162,42"
+          Size="161.6,41.6"
           Id="Package\Execute SQL Task"
           TopLeft="108.571430420389,159.058825760152" />
         <NodeLayout
-          Size="124,42"
+          Size="124,41.6"
           Id="Package\max_date"
           TopLeft="223.571432378827,42.8235300123485" />
         <NodeLayout
-          Size="122,42"
+          Size="121.6,41.6"
           Id="Package\min_date"
           TopLeft="47.8571436721451,41.2941182261932" />
         <NodeLayout
-          Size="168,42"
+          Size="168,41.6"
           Id="Package\populate_dimdates"
           TopLeft="388.57143518876,156.764708080919" />
         <EdgeLayout
