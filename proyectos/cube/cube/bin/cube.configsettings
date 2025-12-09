@@ -13,13 +13,13 @@
     </DataSources>
     <Dimensions>
       <Dimension>
-        <ID>Dim Employee</ID>
+        <ID>Dim Order</ID>
       </Dimension>
       <Dimension>
         <ID>Dim Product</ID>
       </Dimension>
       <Dimension>
-        <ID>Dim Order</ID>
+        <ID>Dim Employee</ID>
       </Dimension>
       <Dimension>
         <ID>Dim Store</ID>

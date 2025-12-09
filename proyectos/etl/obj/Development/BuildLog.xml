@@ -2,7 +2,7 @@
 <BuildLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ProjectInfo>
     <Name>etl</Name>
-    <LastWriteTime>2025-12-06T07:01:37.7157872Z</LastWriteTime>
+    <LastWriteTime>2025-12-06T05:36:41.0603642Z</LastWriteTime>
     <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
   </ProjectInfo>
   <LastBuildInfos>
@@ -38,7 +38,7 @@
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>extract_orders.dtsx</Name>
-      <LastWriteTime>2025-12-08T08:02:10.8621979Z</LastWriteTime>
+      <LastWriteTime>2025-12-08T09:22:27.0029027Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
@@ -63,12 +63,12 @@
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>load_dates.dtsx</Name>
-      <LastWriteTime>2025-12-08T07:55:12.7040667Z</LastWriteTime>
+      <LastWriteTime>2025-12-08T09:22:27.0137336Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>load_employees.dtsx</Name>
-      <LastWriteTime>2025-12-08T07:26:13.3764911Z</LastWriteTime>
+      <LastWriteTime>2025-12-08T09:22:27.0443994Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
@@ -83,12 +83,12 @@
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>load_sales.dtsx</Name>
-      <LastWriteTime>2025-12-08T16:43:24.8175175Z</LastWriteTime>
+      <LastWriteTime>2025-12-08T18:56:14.4930774Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>load_orders2.dtsx</Name>
-      <LastWriteTime>2025-12-08T07:31:45.8461197Z</LastWriteTime>
+      <LastWriteTime>2025-12-08T09:22:27.0593015Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
   </LastBuildInfos>

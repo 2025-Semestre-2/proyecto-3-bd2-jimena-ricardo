@@ -20,16 +20,16 @@
   </Cubes>
   <Dimensions>
     <ProjectItem>
-      <Name>Dim Employee.dim</Name>
-      <FullPath>Dim Employee.dim</FullPath>
+      <Name>Dim Order.dim</Name>
+      <FullPath>Dim Order.dim</FullPath>
     </ProjectItem>
     <ProjectItem>
       <Name>Dim Product.dim</Name>
       <FullPath>Dim Product.dim</FullPath>
     </ProjectItem>
     <ProjectItem>
-      <Name>Dim Order.dim</Name>
-      <FullPath>Dim Order.dim</FullPath>
+      <Name>Dim Employee.dim</Name>
+      <FullPath>Dim Employee.dim</FullPath>
     </ProjectItem>
     <ProjectItem>
       <Name>Dim Store.dim</Name>

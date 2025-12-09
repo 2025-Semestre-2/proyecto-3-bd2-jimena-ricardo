@@ -192,3 +192,19 @@ GO
 ALTER TABLE FactSales  WITH CHECK ADD FOREIGN KEY([DateShippedKey])
 REFERENCES [dbo].[DimDate] ([DateKey])
 GO
+
+SELECT * FROM FactSales
+
+SELECT DISTINCT ProductKey FROM FactSales WHERE ProductKey=20
+
+SELECT DISTINCT ProductKey FROM DimProduct WHERE ProductKey=20
+
+SELECT COUNT(*) FROM DimProduct
+
+DELETE FROM FactSales;
+DELETE FROM DimCustomer;
+DELETE FROM DimDate;
+DELETE FROM DimEmployee;
+DELETE FROM DimOrder;
+DELETE FROM DimProduct;
+DELETE FROM DimStore;
