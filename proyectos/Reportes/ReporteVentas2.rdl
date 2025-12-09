@@ -71,8 +71,7 @@ GROUP BY
 ORDER BY 
     dp.CategoryName,
     dp.BrandName,
-    dp.ProductName;
-</CommandText>
+    dp.ProductName;</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
